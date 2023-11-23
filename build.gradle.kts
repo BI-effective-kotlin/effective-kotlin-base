@@ -1,28 +1,41 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
-    kotlin("jvm") version "1.9.10"
-    id("org.jlleitschuh.gradle.ktlint") version "11.6.0"
-    application
+    id("org.springframework.boot") version "3.1.6"
+    id("io.spring.dependency-management") version "1.1.4"
+    kotlin("jvm") version "1.8.22"
+    kotlin("plugin.spring") version "1.8.22"
 }
 
-group = "kr.beyond-imagination"
-version = "1.0-SNAPSHOT"
+group = "bin.jayden"
+version = "0.0.1-SNAPSHOT"
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+}
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    testImplementation("org.jetbrains.kotlin:kotlin-test:1.9.10")
+    implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+    implementation("org.jetbrains.kotlin:kotlin-reflect")
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 
-tasks.test {
+tasks.withType<KotlinCompile> {
+    kotlinOptions {
+        freeCompilerArgs += "-Xjsr305=strict"
+        jvmTarget = "17"
+    }
+}
+
+tasks.withType<Test> {
     useJUnitPlatform()
 }
 
-kotlin {
-    jvmToolchain(17)
-}
-
-application {
-    mainClass.set("MainKt")
+tasks.bootBuildImage {
+    builder.set("paketobuildpacks/builder-jammy-base:latest")
 }
